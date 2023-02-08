@@ -63,6 +63,10 @@ $\mathcal{K}g(\bf{x}_{n}) = g(\bf{F}(\bf{x}_n)) = g(\bf{x}_{n+1})$
 
 where $\mathcal{K}$ is the Koopman operator, an infinite dimensional linear operator, acting on a measurement function $g$.
 
+An intuative way to understand this, is through a visualisation of the connections between the two dynamics systems. This diagram (inspired by [^cite:brunton]) shows that in the state space, state transitions are made using the non-linear transition function $\bf{F}$. However, Koopman theory states that a coordinate transformation (using $g$) can allow us to obtain latent coordinates ($\bf{y}$) that can instead be evolved linearly using the Koopman operator $\bf{K}$. 
+
+![image info](./figs/state_schematic.png)
+
 ### B. Deep Koopman Network <a name="subparagraph22"></a>
 
 An infinite dimensional linear operator is not particularly useful for a finite data system. However, the DeepKoopman Network[^fn1] addresses this by instead learning a set of spectral components of the Koopman operator, and using these as an intrinsic measurement coordinate system.
@@ -75,22 +79,15 @@ These components are then used to create latent coordinates $\bf{y}=\phi(\bf{x})
 
 
 ## 3. Tutorials <a name="paragraph2"></a>
-Placeholder
+
 
 ### A. Pendulum dynamics outline <a name="subparagraph30"></a>
 - The dynamics of a pendulum are briefly introduced, to highlight the applicability of learning this non-linear dynamics problem with a Koopman operator theory based approach.
 
-### B. Pendulum (small angle approximation) <a name="subparagraph31"></a>
+### B. Pendulum <a name="subparagraph31"></a>
 -
 
-### C. Pendulum <a name="subparagraph32"></a>
--
 
-### D. Double pendulum <a name="subparagraph33"></a>
--
-
-### E. Soft pendulum <a name="subparagraph34"></a>
--
 
 [^fn0]: Komeno, Naoto, Brendan Michael, Katharina Küchler, Edgar Anarossi, and Takamitsu Matsubara. "Deep Koopman with Control: Spectral Analysis of Soft Robot Dynamics." 2022 61st Annual Conference of the Society of Instrument and Control Engineers (SICE). IEEE, 2022. https://ieeexplore.ieee.org/abstract/document/9905758/
 [^fn00]: https://arxiv.org/pdf/2210.07563.pdf
