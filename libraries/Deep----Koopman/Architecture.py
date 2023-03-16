@@ -38,6 +38,44 @@ def _transformer(x, out_dim, inter_dim_list=[32, 32],l2_reg=0, activation_out = 
 
               ))(x)
     return x
+
+# Undocumented in the paper, but original DKN code learns the eigenvalues from the magnitude of the complex latent coordinates
+# I.e. for each complex pair,
+# radius_of_pair = tf.reduce_sum(tf.square(pair_of_columns), axis=1, keep_dims=True)
+# This class computes the magnitude of complex eigenfunctions, and concats with the real ones, as input to the aux network
+class compute_aux_inputs(Layer):
+
+    def __init__(self, num_complex, num_real, **kwargs):
+        self.num_complex = num_complex
+        self.num_real = num_real
+        
+        super(compute_aux_inputs, self).__init__(**kwargs)
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'num_complex': self.num_complex,
+            'num_real': self.num_real,
+        })
+        return config
+
+    def build(self, input_shape):
+        super(compute_aux_inputs, self).build(input_shape)
+
+    def call(self, x):
+        if self.num_complex:
+            xc = x[:,:,:self.num_complex*2]
+            xc = tf.reduce_sum(tf.reshape(tf.square(xc),(-1,1,self.num_complex,2)),axis=-1)
+            
+        if self.num_real:
+            xr = x[:,:,2*self.num_complex:]
+            
+        if self.num_complex and self.num_real:
+            return tf.concat([xc,xr], axis=-1)
+        elif self.num_complex:
+            return xc
+        elif self.num_real:
+            return xr
     
 def _pred_K(x, num_complex, num_real,hidden_widths_omega, K_reg,l2_reg=0,activation_out='linear'):
     for j in hidden_widths_omega:
@@ -62,11 +100,12 @@ def _pred_K(x, num_complex, num_real,hidden_widths_omega, K_reg,l2_reg=0,activat
     
 class linear_update(Layer):
 
-    def __init__(self, output_dim, num_complex, num_real, **kwargs):
+    def __init__(self, output_dim, num_complex, num_real,dt, **kwargs):
         self.output_dim = output_dim
         self.kernels = []
         self.num_complex = num_complex
         self.num_real = num_real
+        self.dt = dt
         
         super(linear_update, self).__init__(**kwargs)
 
@@ -77,6 +116,7 @@ class linear_update(Layer):
             'kernels': self.kernels,
             'num_complex': self.num_complex,
             'num_real': self.num_real,
+            'dt': self.dt,
         })
         return config
 
@@ -103,9 +143,9 @@ class linear_update(Layer):
                 for count_c in range(self.num_complex):
                 
                     # forming complex block : batchsize, 2, 2
-                    scale = tf.exp(Km_i[:, count_c]) # real component
-                    cs = tf.cos(Km_i[:, count_c + self.num_complex]) # chooses the imaginary component (odd axes)
-                    sn = tf.sin(Km_i[:, count_c + self.num_complex]) # chooses the imaginary component (odd axes)
+                    scale = tf.exp(Km_i[:, count_c]*self.dt) # real component
+                    cs = tf.cos(Km_i[:, count_c + self.num_complex]*self.dt) # chooses the imaginary component (odd axes)
+                    sn = tf.sin(Km_i[:, count_c + self.num_complex]*self.dt) # chooses the imaginary component (odd axes)
                     real = tf.multiply(scale, cs)
                     img = tf.multiply(scale, sn)
                     block = tf.stack([real, -img, img, real], axis = 1)
@@ -125,7 +165,7 @@ class linear_update(Layer):
         # forming real block: batchsize, 1
         R_seq = []
         if self.num_real:
-            R = tf.exp(Km[:,(2*self.num_complex):])
+            R = tf.exp(Km[:,(2*self.num_complex):]*self.dt)
             R_seq.append(y[:,0, (2*self.num_complex):]) # previous version
             #R_seq.append(y[:, (2*self.num_complex):]) # Linear update only given the initial condition 
             for i in range(self.output_dim[0]-1):
