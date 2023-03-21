@@ -17,6 +17,6 @@ def fn_dynamics_pendulum(x,u,model):
     mu  = model['mu']
     g   = model['G']
     qdot  = x[1] # Velocity
-    qddot = (g/l)*np.sin(x[0]) + (u-mu*x[1])/((m*l)**2) # Accelleration
+    qddot = (-g/l)*np.sin(x[0]) + (u-mu*x[1])/((m*l)**2) # Accelleration
     xdot  = [qdot, qddot]
     return xdot
