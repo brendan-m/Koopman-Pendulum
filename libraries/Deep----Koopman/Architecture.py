@@ -138,9 +138,8 @@ class linear_update(Layer):
         return config
 
     def build(self, input_shape):
-#        assert isinstance(input_shape, list)
         # Create a trainable weight variable for this layer.
-        super(linear_update, self).build(input_shape)  # Be sure to call this at the end
+        super(linear_update, self).build(input_shape)
 
     def call(self, x):
         assert isinstance(x, list)
@@ -166,12 +165,10 @@ class linear_update(Layer):
             # Put all complex components into a single tensor
             C_seq_tensor = tf.reshape(tf.stack(C_seq_c, axis = 1), (-1, 2*self.num_complex))
        
-        # forming real block: batchsize, 1
-        R_seq = []
         if self.num_real:
+            R_seq = []
             R = tf.exp(Km[:,(2*self.num_complex):]*self.dt)
-            R_seq_tensor = tf.stack(tf.multiply(y[:,(2*self.num_complex):], R), axis = 1)
-
+            R_seq_tensor = tf.multiply(y[:,(2*self.num_complex):], R)
         if self.num_complex and self.num_real:
             return tf.concat([C_seq_tensor, R_seq_tensor], axis=2)
         
