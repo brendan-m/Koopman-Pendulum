@@ -4,6 +4,7 @@
 # Koopman Pendulum Tutorials: Learning non-linear dynamics with Koopman operator theory
 
 # Table of contents
+0. [Requirements](#requirements)
 1. [Introduction](#introduction)
     1. [What is included in this repository?](#subparagraph11)
     2. [What is *not* included in this repository?](#subparagraph12)
@@ -15,6 +16,14 @@
 3. [Tutorials](#paragraph2)
     1. [Pendulum dynamics outline](#subparagraph30)
     2. [Pendulum](#subparagraph31)
+    
+## 0. Requirements <a name="introduction"></a>
+
+This repository uses a number of libraries including Keras, Tensorflow and Seaborn.
+
+The Deep--Koopman library is originally from [^fn3] but significant modifications have been made to it to justify including here in the './libraries/ folder.
+
+You will also need to include a modified version of the Keras-HDF5-ImageDataGenerator from [here](https://gitlab.com/Brendan_Michael/Keras-HDF5-ImageDataGenerator) to save/load data as generators. Please also include this in the './libraries/ folder.
 
 ## 1. Introduction <a name="introduction"></a>
 This repository is a collection of notebooks demonstrating analysis of non-linear pendulum dynamics with a Koopman operator theory based deep learning framework. This repository is **not** aimed at teaching you Koopman theory, neither is it an extensive code framework for learning from datasets (as such, code here can likely **not** be run as is). Rather, this is a collection of analyses and evaluations in a specific use-case, to help support the understanding of Koopman operatory theory. 
