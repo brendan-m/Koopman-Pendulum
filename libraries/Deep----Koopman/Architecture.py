@@ -83,7 +83,6 @@ def _pred_K(x, num_complex, num_real,hidden_widths_omega, K_reg,l2_reg=0,activat
                    activity_regularizer=l2(l2_reg),
                    bias_initializer=Zeros(),
                    kernel_initializer=RandomUniform(minval=-(1/np.sqrt(x.shape[-1])), maxval=(1/np.sqrt(x.shape[-1]))),
-
                   ))(x) 
         x = (Activation('relu'))(x)
     Koop = (Dense(num_complex*2 + num_real,
@@ -170,7 +169,7 @@ class linear_update(Layer):
             R = tf.exp(Km[:,(2*self.num_complex):]*self.dt)
             R_seq_tensor = tf.multiply(y[:,(2*self.num_complex):], R)
         if self.num_complex and self.num_real:
-            return tf.concat([C_seq_tensor, R_seq_tensor], axis=2)
+            return tf.concat([C_seq_tensor, R_seq_tensor], axis=1)
         
         elif self.num_real:
             return R_seq_tensor
